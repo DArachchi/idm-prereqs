@@ -1,0 +1,8 @@
+---
+# defaults file for idm-prereqs
+minimum_ram: 16
+minimum_swap_space: 4
+
+fips: true
+
+ntp_record: _ntp._udp

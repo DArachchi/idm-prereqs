@@ -1,0 +1,103 @@
+---
+# tasks file for idm-prereqs
+
+- name: Check for root user access
+  assert:
+    that: ansible_user_uid == 0
+    fail_msg: "Current user is not root"
+    success_msg: "Current user is root"
+
+- name: Check that RAM is sufficient
+  assert:
+    that: ansible_memtotal_mb/1024 + 1 >= minimum_ram
+    fail_msg: "{{ ansible_memtotal_mb }} MB of RAM does NOT meet minimum requirements"
+    success_msg: "RAM meets minimum requirements"
+
+- name: Check that swap space is sufficient
+  assert:
+    that: ansible_swaptotal_mb/1024 + 1 >= minimum_swap_space
+    fail_msg: "{{ ansible_swaptotal_mb }} MB of swap space does NOT meet minimum requirements"
+    success_msg: "Swap space meets minimum requirements"
+
+- name: Check IPv6 protocol
+  block:
+    - name: Check status of IPv6 protocol
+      command: cat /sys/module/ipv6/parameters/disable
+      register: ipv6_result
+
+    - name: Check that the IPv6 protocol is enabled in the kernel
+      assert:
+        that: ipv6_result.stdout == "0"
+        fail_msg: "IPv6 protocol is not enabled"
+        success_msg: "IPv6 protocol is enabled"
+
+- name: Check for supported system-wide cryptographic policy
+  block:
+    - name: Check current cryptographic policy
+      command: update-crypto-policies --show
+      register: crypto_policies_result
+
+    - name: Check that cryptographic policy is supported
+      assert:
+        that: crypto_policies_result.stdout == "DEFAULT"
+        fail_msg: "Current cryptographic policy is not supported"
+        success_msg: "Current cryptographic policy is supported"
+  when: fips == false
+
+- name: Check FIPS
+  block:
+    - name: Check FIPS status
+      command: cat /proc/sys/crypto/fips_enabled
+      register: fips_result
+
+    - name: Check that FIPS is enabled
+      assert:
+        that: fips_result.stdout == "1"
+        fail_msg: "FIPS is not enabled"
+        success_msg: "FIPS is enabled"
+  when: fips == true
+
+- name: Query for SRV record for NTP
+  command: dig +short -t SRV {{ ntp_record|quote }}.{{ ipaserver_domain|quote }}
+  register: ntp_result
+
+- name: Check that SRV record for NTP exists
+  assert:
+    that: ntp_result.stdout != ""
+    fail_msg: "SRV record for NTP does not exist"
+    success_msg: "SRV record for NTP does exist"
+
+- name: Check that hostname is not localhost
+  assert:
+    that:
+      - ansible_nodename != "localhost"
+      - ansible_nodename != "localhost6"
+
+- name: Query for IdM server A record
+  command: "dig +short {{ ipaserver_hostname }} A"
+  register: forward_record_result
+
+- name: Verify forward DNS configuration for IdM server record
+  assert:
+    that: forward_record_result.stdout == ansible_default_ipv4.address
+    fail_msg: "Forward DNS record for IdM server is incorrect"
+    success_msg: "Forward DNS record for IdM server is correct"
+
+- name: Query for IdM reverese record
+  command: "dig +short -x {{ ansible_default_ipv4.address }}"
+  register: reverse_record_result
+
+- name: Verify reverse DNS configuration for IdM server record
+  assert:
+    that: reverse_record_result.stdout == "{{ ipaserver_hostname }}."
+    fail_msg: "Reverse DNS record for IdM server is incorrect"
+    success_msg: "Reverse DNS record for IdM server is correct"
+
+
+# - name: Print all available facts
+#   ansible.builtin.debug:
+#     var: ansible_default_ipv4.address
+
+# - name: Print all available facts
+#   ansible.builtin.debug:
+#     var: ansible_facts

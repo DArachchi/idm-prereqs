@@ -31,17 +31,15 @@
         fail_msg: "IPv6 protocol is not enabled"
         success_msg: "IPv6 protocol is enabled"
 
-- name: Check for supported system-wide cryptographic policy
-  block:
-    - name: Check current cryptographic policy
-      command: update-crypto-policies --show
-      register: crypto_policies_result
+- name: Check current cryptographic policy
+  command: update-crypto-policies --show
+  register: crypto_policies_result
 
-    - name: Check that cryptographic policy is supported
-      assert:
-        that: crypto_policies_result.stdout == "DEFAULT"
-        fail_msg: "Current cryptographic policy is not supported"
-        success_msg: "Current cryptographic policy is supported"
+- name: Check that cryptographic policy is supported
+  assert:
+    that: crypto_policies_result.stdout == "DEFAULT"
+    fail_msg: "Current cryptographic policy is not supported"
+    success_msg: "Current cryptographic policy is supported"
   when: fips == false
 
 - name: Check FIPS
@@ -93,9 +91,15 @@
   command: "dig +short -x {{ ansible_default_ipv4.address }}"
   register: reverse_record_result
 
+- debug:
+    var: reverse_record_result.stdout
+
+- debug:
+    var: ansible_nodename
+
 - name: Verify reverse DNS configuration for IdM server record
   assert:
-    that: reverse_record_result.stdout == "{{ ansible_nodename }}."
+    that: reverse_record_result.stdout == ansible_nodename + "."
     fail_msg: "Reverse DNS record for IdM server is incorrect"
     success_msg: "Reverse DNS record for IdM server is correct"
 

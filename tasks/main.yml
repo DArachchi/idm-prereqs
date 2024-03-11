@@ -55,6 +55,12 @@
         that: fips_result.stdout == "1"
         fail_msg: "FIPS is not enabled"
         success_msg: "FIPS is enabled"
+
+    - name: Check that cryptographic policy is supported
+      assert:
+        that: crypto_policies_result.stdout == "FIPS"
+        fail_msg: "Current cryptographic policy is not supported"
+        success_msg: "Current cryptographic policy is supported"
   when: fips == true
 
 - name: Query for SRV record for NTP
@@ -74,7 +80,7 @@
       - ansible_nodename != "localhost6"
 
 - name: Query for IdM server A record
-  command: "dig +short {{ ipaserver_hostname }} A"
+  command: "dig +short {{ ansible_nodename }} A"
   register: forward_record_result
 
 - name: Verify forward DNS configuration for IdM server record
@@ -89,7 +95,7 @@
 
 - name: Verify reverse DNS configuration for IdM server record
   assert:
-    that: reverse_record_result.stdout == "{{ ipaserver_hostname }}."
+    that: reverse_record_result.stdout == "{{ ansible_nodename }}."
     fail_msg: "Reverse DNS record for IdM server is incorrect"
     success_msg: "Reverse DNS record for IdM server is correct"
 

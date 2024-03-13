@@ -97,12 +97,6 @@
   command: "dig +short -x {{ ansible_default_ipv4.address }}"
   register: reverse_record_result
 
-- debug:
-    var: reverse_record_result.stdout
-
-- debug:
-    var: ansible_nodename
-
 - name: Verify reverse DNS configuration for IdM server record
   assert:
     that: reverse_record_result.stdout == ansible_nodename + "."
@@ -122,23 +116,50 @@
     immediate: true
   loop: "{{ unneeded_services }}"
 
-- name: Ensure that required services are added to firewalld
+- name: Ensure that required TCP ports are added to firewalld
   firewalld:
-    service: "{{ item }}"
+    port: "{{ item }}/tcp"
     permanent: true
     immediate: true
     state: enabled
-  loop : "{{ firewall_services }}"
+  loop : "{{ tcp_ports }}"
+
+- name: Ensure that required UDP ports are added to firewalld
+  firewalld:
+    port: "{{ item }}/udp"
+    permanent: true
+    immediate: true
+    state: enabled
+  loop : "{{ udp_ports }}"
+
+- name: Check ports required for AD trust
+  block:
+    - name: Ensure that required TCP ports for AD trust are added to firewalld
+      firewalld:
+        port: "{{ item }}/tcp"
+        permanent: true
+        immediate: true
+        state: enabled
+      loop : "{{ tcp_ports_ad }}"
+
+    - name: Ensure that required UDP ports for AD trust are added to firewalld
+      firewalld:
+        port: "{{ item }}/udp"
+        permanent: true
+        immediate: true
+        state: enabled
+      loop : "{{ udp_ports_ad }}"
+  when: ad_trust == true
 
 - name: Check if ports for IdM are open and accessible on host
   ansible.builtin.wait_for:
     port: "{{ item }}"
     timeout: 3
-  loop: "{{ idm_ports }}"
+  loop: "{{ tcp_ports }}"
 
 - name: Check if ports for IdM-AD trust are open and accessible on host
   ansible.builtin.wait_for:
     port: "{{ item }}"
     timeout: 3
-  loop: "{{ idm_ports_ad }}"
+  loop: "{{ tcp_ports_ad }}"
   when: ad_trust == true

@@ -18,7 +18,7 @@ unneeded_services:
 firewall_services:
   - freeipa-4
 
-idm_ports:
+tcp_ports:
   - 80
   - 443
   - 389
@@ -26,9 +26,19 @@ idm_ports:
   - 88
   - 464
 
-idm_ports_ad:
+tcp_ports_ad:
   - 135
   - 138
   - 139
   - 445
   - 3268
+
+udp_ports:
+  - 88
+  - 464
+
+udp_ports_ad:
+  - 138
+  - 139
+  - 445
+  - 389

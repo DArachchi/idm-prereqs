@@ -1,6 +1,12 @@
 ---
 # tasks file for idm-prereqs
 
+- name: Ensure that required packages are installed
+  package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ packages }}"
+
 - name: Check for root user access
   assert:
     that: ansible_user_uid == 0
@@ -103,13 +109,27 @@
     fail_msg: "Reverse DNS record for IdM server is incorrect"
     success_msg: "Reverse DNS record for IdM server is correct"
 
+- name: Ensure that firewalld is running
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: Ensure that required services are added to firewalld
+  firewalld:
+    service: freeipa-4
+    permanent: true
+    state: enabled
+
 - name: Check if ports for IdM are open and accessible on host
   ansible.builtin.wait_for:
     port: "{{ item }}"
+    timeout: 3
   loop: "{{ idm_ports }}"
 
 - name: Check if ports for IdM-AD trust are open and accessible on host
   ansible.builtin.wait_for:
     port: "{{ item }}"
+    timeout: 3
   loop: "{{ idm_ports_ad }}"
   when: ad_trust == true

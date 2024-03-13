@@ -1,5 +1,9 @@
 ---
 # defaults file for idm-prereqs
+packages:
+  - bind-utils
+  - firewalld
+
 minimum_ram: 16
 minimum_swap_space: 4
 

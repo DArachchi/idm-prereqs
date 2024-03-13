@@ -103,11 +103,13 @@
     fail_msg: "Reverse DNS record for IdM server is incorrect"
     success_msg: "Reverse DNS record for IdM server is correct"
 
+- name: Check if ports for IdM are open and accessible on host
+  ansible.builtin.wait_for:
+    port: "{{ item }}"
+  loop: "{{ idm_ports }}"
 
-# - name: Print all available facts
-#   ansible.builtin.debug:
-#     var: ansible_default_ipv4.address
-
-# - name: Print all available facts
-#   ansible.builtin.debug:
-#     var: ansible_facts
+- name: Check if ports for IdM-AD trust are open and accessible on host
+  ansible.builtin.wait_for:
+    port: "{{ item }}"
+  loop: "{{ idm_ports_ad }}"
+  when: ad_trust == true

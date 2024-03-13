@@ -4,5 +4,20 @@ minimum_ram: 16
 minimum_swap_space: 4
 
 fips: true
-
+ad_trust: true
 ntp_record: _ntp._udp
+
+idm_ports:
+  - 80
+  - 443
+  - 389
+  - 636
+  - 88
+  - 464
+
+idm_ports_ad:
+  - 135
+  - 138
+  - 139
+  - 445
+  - 3268

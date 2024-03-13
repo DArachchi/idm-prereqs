@@ -11,6 +11,13 @@ fips: true
 ad_trust: true
 ntp_record: _ntp._udp
 
+unneeded_services:
+  - freeipa-4
+  - dns
+
+firewall_services:
+  - freeipa-4
+
 idm_ports:
   - 80
   - 443

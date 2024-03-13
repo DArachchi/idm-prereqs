@@ -115,12 +115,20 @@
     state: started
     enabled: yes
 
+- name: Remove unneeded services from firewalld
+  firewalld:
+    service: "{{ item }}"
+    state: disabled
+    immediate: true
+  loop: "{{ unneeded_services }}"
+
 - name: Ensure that required services are added to firewalld
   firewalld:
-    service: freeipa-4
+    service: "{{ item }}"
     permanent: true
     immediate: true
     state: enabled
+  loop : "{{ firewall_services }}"
 
 - name: Check if ports for IdM are open and accessible on host
   ansible.builtin.wait_for:

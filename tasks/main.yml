@@ -119,6 +119,7 @@
   firewalld:
     service: freeipa-4
     permanent: true
+    immediate: true
     state: enabled
 
 - name: Check if ports for IdM are open and accessible on host

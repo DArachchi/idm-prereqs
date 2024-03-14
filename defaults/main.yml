@@ -17,6 +17,28 @@ unneeded_services:
 
 firewall_services:
   - freeipa-4
+  - freeipa-trust
+
+unneeded_tcp_ports:
+  - 80
+  - 443
+  - 389
+  - 636
+  - 88
+  - 464
+  - 135
+  - 138
+  - 139
+  - 445
+  - 3268
+
+unneeded_udp_ports:
+  - 88
+  - 464
+  - 138
+  - 139
+  - 445
+  - 389
 
 tcp_ports:
   - 80

@@ -109,27 +109,6 @@
     state: started
     enabled: yes
 
-- name: Remove unneeded services from firewalld
-  firewalld:
-    service: "{{ item }}"
-    state: disabled
-    immediate: true
-  loop: "{{ unneeded_services }}"
-
-- name: Remove unneeded TCP ports from firewalld
-  firewalld:
-    port: "{{ item }}/tcp"
-    state: disabled
-    immediate: true
-  loop: "{{ unneeded_tcp_ports }}"
-
-- name: Remove unneeded UDP ports from firewalld
-  firewalld:
-    port: "{{ item }}/udp"
-    state: disabled
-    immediate: true
-  loop: "{{ unneeded_udp_ports }}"
-
 # - name: Ensure that required TCP ports are added to firewalld
 #   firewalld:
 #     port: "{{ item }}/tcp"

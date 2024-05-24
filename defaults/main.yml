@@ -17,4 +17,6 @@ ntp_record: _ntp._udp
 
 firewall_services:
   - freeipa-4
+
+firewall_services_ad:
   - freeipa-trust

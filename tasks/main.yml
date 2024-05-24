@@ -109,23 +109,7 @@
     state: started
     enabled: yes
 
-# - name: Ensure that required TCP ports are added to firewalld
-#   firewalld:
-#     port: "{{ item }}/tcp"
-#     permanent: true
-#     immediate: true
-#     state: enabled
-#   loop : "{{ tcp_ports }}"
-
-# - name: Ensure that required UDP ports are added to firewalld
-#   firewalld:
-#     port: "{{ item }}/udp"
-#     permanent: true
-#     immediate: true
-#     state: enabled
-#   loop : "{{ udp_ports }}"
-
-- name: Ensure that required services are added to firewalld
+- name: Ensure that required service(s) are added to firewalld
   firewalld:
     service: "{{ item }}"
     permanent: true
@@ -133,34 +117,11 @@
     state: enabled
   loop : "{{ firewall_services }}"
 
-# - name: Check ports required for AD trust
-#   block:
-#     - name: Ensure that required TCP ports for AD trust are added to firewalld
-#       firewalld:
-#         port: "{{ item }}/tcp"
-#         permanent: true
-#         immediate: true
-#         state: enabled
-#       loop : "{{ tcp_ports_ad }}"
-
-#     - name: Ensure that required UDP ports for AD trust are added to firewalld
-#       firewalld:
-#         port: "{{ item }}/udp"
-#         permanent: true
-#         immediate: true
-#         state: enabled
-#       loop : "{{ udp_ports_ad }}"
-#   when: ad_trust == true
-
-# - name: Check if ports for IdM are open and accessible on host
-#   ansible.builtin.wait_for:
-#     port: "{{ item }}"
-#     timeout: 3
-#   loop: "{{ tcp_ports }}"
-
-# - name: Check if ports for IdM-AD trust are open and accessible on host
-#   ansible.builtin.wait_for:
-#     port: "{{ item }}"
-#     timeout: 3
-#   loop: "{{ tcp_ports_ad }}"
-#   when: ad_trust == true
+- name: Ensure that required service(s) for AD trust are added to firewalld
+  firewalld:
+    service: "{{ item }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  loop : "{{ firewall_services_ad }}"
+  when: ad_trust == true

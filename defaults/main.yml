@@ -20,3 +20,5 @@ firewall_services:
 
 firewall_services_ad:
   - freeipa-trust
+
+ipaserver_domain: example.com

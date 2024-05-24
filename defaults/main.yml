@@ -3,6 +3,10 @@
 packages:
   - bind-utils
   - firewalld
+  - ipa-server
+  - ipa-server-trust-ad
+  - samba-client
+  - ipa-healthcheck
 
 minimum_ram: 16
 minimum_swap_space: 4
@@ -11,35 +15,6 @@ fips: true
 ad_trust: true
 ntp_record: _ntp._udp
 
-unneeded_services:
-  - freeipa-4
-  - dns
-
 firewall_services:
   - freeipa-4
   - freeipa-trust
-
-tcp_ports:
-  - 80
-  - 443
-  - 389
-  - 636
-  - 88
-  - 464
-
-tcp_ports_ad:
-  - 135
-  - 138
-  - 139
-  - 445
-  - 3268
-
-udp_ports:
-  - 88
-  - 464
-
-udp_ports_ad:
-  - 138
-  - 139
-  - 445
-  - 389

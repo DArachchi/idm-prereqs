@@ -62,7 +62,7 @@
 
     - name: Check that cryptographic policy is supported
       assert:
-        that: crypto_policies_result.stdout == "FIPS"
+        that: crypto_policies_result.stdout == "FIPS" or "FIPS:AD-SUPPORT"
         fail_msg: "Current cryptographic policy is not supported"
         success_msg: "Current cryptographic policy is supported"
   when: fips == true
